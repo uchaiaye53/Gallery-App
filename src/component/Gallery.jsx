@@ -13,6 +13,8 @@ import image11 from "../images/image-11.jpeg";
 
 const Gallery = () => {
   const [hoveredIndex, setHoveredIndex] = useState(-1);
+  const [checkedCount, setCheckedCount] = useState(0);
+  const [checkedImages, setCheckedImages] = useState([]);
 
   const imagesUrls = [
     image1,
@@ -29,11 +31,46 @@ const Gallery = () => {
     "add",
   ];
 
+
+
+  const handleCheckboxChange = (index)=>{
+    let updatedCheckedImages = [...checkedImages];
+    if(checkedImages.includes(index)){
+      updatedCheckedImages = updatedCheckedImages.filter((item) => item!==index);
+    }else{
+      updatedCheckedImages.push(index);
+    }
+    setCheckedImages(updatedCheckedImages);
+    setCheckedCount(updatedCheckedImages.length);
+  }
+
+  
   return (
     <div className="bg-gray-100">
       <div className="bg-white m-8 border-2 rounded-md h-{800px}">
         <div>
-          <h1>Gallery</h1>
+          {
+           checkedCount===0 &&(
+            <p className="font-semibold pl-12 text-2xl mt-3 mb-3">Gallery</p>
+           )
+          }
+          {
+            <div className="flex justify-between mt-3 mb-3">
+              {checkedCount===1 &&(
+                <>
+                 <p className="font-semibold pl-12 text-2xl">{checkedCount} File Selected</p>
+                 <button className="text-red-600 font-medium text-sm pr-12">Delete File</button>
+                </>
+                
+              )}
+              {checkedCount>1 &&(
+                <>
+                 <p className="font-semibold pl-12 text-2xl">{checkedCount} Files Selected</p>
+                 <button className="text-red-600 font-medium text-sm pr-12">Delete Files</button>
+                </>                
+              )}
+            </div>
+          }
         </div>
         <hr />
 
@@ -47,11 +84,11 @@ const Gallery = () => {
                   : "border-2 rounded-lg relative cursor-pointer"
               }
               onMouseEnter={() => {
-                if(index !==11)
+                if(!checkedImages.includes(index) && index !==11)
                 setHoveredIndex(index)
               }}
               onMouseLeave={() => {
-                setHoveredIndex(-1)
+                if(!checkedImages.includes(index)) setHoveredIndex(-1);
               }}
             >
               {url==="add" ? (
@@ -68,9 +105,9 @@ const Gallery = () => {
                 />
               )}
 
-              {hoveredIndex === index && (
+              {(hoveredIndex === index || checkedImages.includes(index)) && (
                 <div className="absolute inset-0 p-4 bg-black bg-opacity-50 rounded-lg">
-                  <input type="checkbox" className="size-4 m-5" />
+                  <input type="checkbox" checked={checkedImages.includes(index)} onChange={()=>handleCheckboxChange(index)} className="size-4 m-5" />
                 </div>
               )}
             </div>
